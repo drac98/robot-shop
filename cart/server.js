@@ -23,6 +23,15 @@ const counter = new promClient.Counter({
     registers: [register]
 });
 
+// Redis response time
+const get_resp_cart_redis = new promClient.Histogram(
+    {
+        name: 'get_resp_cart_redis',
+        help: 'response time of redis GET request from cart',
+        buckets: [0, 0.1, 5, 15, 50, 100, 500],
+        registers: [register],
+    }
+    );
 
 var redisConnected = false;
 
@@ -82,6 +91,8 @@ app.get('/metrics', (req, res) => {
 
 // get cart with id
 app.get('/cart/:id', (req, res) => {
+    // Start timing service: redis(/get)
+    var start = new Date().getTime();
     redisClient.get(req.params.id, (err, data) => {
         if(err) {
             req.log.error('ERROR', err);
@@ -95,6 +106,8 @@ app.get('/cart/:id', (req, res) => {
             }
         }
     });
+    var elapsed = new Date().getTime() - start; // End timing service: redis(/get)
+    get_resp_cart_redis.observe(elapsed)
 });
 
 // delete cart with id
