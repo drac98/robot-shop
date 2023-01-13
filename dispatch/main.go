@@ -8,12 +8,15 @@ import (
 	"os"
 	"strconv"
 	"time"
+	"net/http"
 
 	"github.com/instana/go-sensor"
 	ot "github.com/opentracing/opentracing-go"
 	"github.com/opentracing/opentracing-go/ext"
 	otlog "github.com/opentracing/opentracing-go/log"
 	"github.com/streadway/amqp"
+	"github.com/prometheus/client_golang/prometheus"
+	"github.com/prometheus/client_golang/prometheus/promhttp"
 )
 
 const (
@@ -34,6 +37,14 @@ var (
 		"us-east1",
 		"us-west1",
 	}
+	rt_histogram = prometheus.NewHistogram(
+        prometheus.HistogramOpts{
+            Name:        "consume_rt_dispatch_rabbitmq",
+            Help:        "Response time of dispatcher consuming rabbitmq",
+            Buckets:     prometheus.ExponentialBuckets(0.0001, 10, 5), //LinearBuckets
+        },
+        //[]string{"endpoint"}, //for histogramVec type
+    )
 )
 
 func connectToRabbitMQ(uri string) *amqp.Connection {
@@ -167,6 +178,22 @@ func processSale(parentSpan ot.Span) {
 func main() {
 	rand.Seed(time.Now().Unix())
 
+	prometheus.MustRegister(rt_histogram)
+    prometheus.Gatherers{}.Gather()
+	//start := time.Now()
+	rt_histogram.Observe(0.33)
+	
+	go func(){
+		http.Handle("/metrics", promhttp.Handler())
+        log.Println("in prom2")
+        err := http.ListenAndServe(":8080", nil)
+        log.Println("in prom3")
+        log.Println(err)
+        if err != nil {
+            return
+        }
+	}()
+
 	// Instana tracing
 	ot.InitGlobalTracer(instana.NewTracerWithOptions(&instana.Options{
 		Service:           Service,
@@ -214,16 +241,19 @@ func main() {
 			// wait for rabbit to be ready
 			ready := <-rabbitReady
 			log.Printf("Rabbit MQ ready %v\n", ready)
-
+			
 			// subscribe to bound queue
 			msgs, err := rabbitChan.Consume("orders", "", true, false, false, false, nil)
 			failOnError(err, "Failed to consume")
 
 			for d := range msgs {
+				// get response time per each message or per message queue
+				start := time.Now()
 				log.Printf("Order %s\n", d.Body)
 				log.Printf("Headers %v\n", d.Headers)
 				id := getOrderId(d.Body)
 				go createSpan(d.Headers, id)
+				rt_histogram.Observe(float64(time.Since(start).Nanoseconds())) //Microseconds,Milliseconds change as needed
 			}
 		}
 	}()
