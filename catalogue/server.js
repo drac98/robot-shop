@@ -43,9 +43,9 @@ const register = new Registry();
 }); */
 
 //  get all products response time
-const get_all_products_rt = new promClient.Histogram(
+const get_resp_catalogue_all_products = new promClient.Histogram(
     {
-        name: 'get_all_products_rt',
+        name: 'get_resp_catalogue_all_products',
         help: 'response time of get all products from catalogue service',
         buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5,2],
         registers: [register]
@@ -53,9 +53,9 @@ const get_all_products_rt = new promClient.Histogram(
     );
 
 //  get all products in order response time
-const get_all_products_order_rt = new promClient.Histogram(
+const get_resp_catalogue_all_products_ordered = new promClient.Histogram(
     {
-        name: 'get_all_products_order_rt',
+        name: 'get_resp_catalogue_all_products_ordered',
         help: 'response time of get  products in order from catalogue service',
         buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1,1.5,2],
         registers: [register]
@@ -63,9 +63,9 @@ const get_all_products_order_rt = new promClient.Histogram(
     );
 
 //  get all products in category response time
-const get_all_products_category_rt = new promClient.Histogram(
+const get_resp_catalogue_category_products = new promClient.Histogram(
     {
-        name: 'get_all_products_category_rt',
+        name: 'get_resp_catalogue_category_products',
         help: 'response time of get  products in order from catalogue service',
         buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5, 2],
         registers: [register]
@@ -73,9 +73,9 @@ const get_all_products_category_rt = new promClient.Histogram(
     );
 
 //  get products by name and description response time
-const search_name_and_description_rt = new promClient.Histogram(
+const get_resp_catalogue_search_name_desc = new promClient.Histogram(
     {
-        name: 'search_name_and_description_rt',
+        name: 'get_resp_catalogue_search_name_desc',
         help: 'response time of searching  products in from catalogue',
         buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5, 2],
         registers: [register]
@@ -83,7 +83,7 @@ const search_name_and_description_rt = new promClient.Histogram(
     );
 
 // get products by category 
-const get_categories_rt = new promClient.Histogram(
+const get_resp_catalogue_get_categories = new promClient.Histogram(
     {
         name: 'search_name_categories_rt',
         help: 'response time of searching  products in from catalogue',
@@ -151,7 +151,7 @@ app.get('/products', (req, res) => {
     }
     // End timing service: redis(/get)
     var elapsed = new Date().getTime() - start; 
-    get_all_products_rt.observe(elapsed);
+    get_resp_catalogue_all_products.observe(elapsed);
 });
 
 // product by SKU
@@ -201,7 +201,7 @@ app.get('/products/:cat', (req, res) => {
         res.status(500).send('database not avaiable');
     }
     var elapsed = new Date().getTime() - start; 
-    get_all_products_category_rt.observe(elapsed);
+    get_resp_catalogue_category_products.observe(elapsed);
 });
 
 // all categories
@@ -219,7 +219,7 @@ app.get('/categories', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; 
-    get_categories_rt.observe(elapsed);
+    get_resp_catalogue_get_categories.observe(elapsed);
 });
 
 // search name and description
@@ -237,12 +237,12 @@ app.get('/search/:text', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; 
-    search_name_and_description_rt.observe(elapsed);
+    get_resp_catalogue_search_name_desc.observe(elapsed);
 });
 
 // Prometheus
 app.get('/metrics', (req, res) => {
-    res.header('Content-Type', 'text/plain');
+    res.header('Content-Type', promClient.register.contentType);
     res.send(register.metrics());
 });
 
