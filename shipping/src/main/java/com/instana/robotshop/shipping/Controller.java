@@ -9,6 +9,10 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
+import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -16,9 +20,33 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
+import org.springframework.beans.factory.annotation.Autowired;
+import io.micrometer.core.instrument.MeterRegistry;
+import io.micrometer.core.instrument.simple.*;
+import io.prometheus.client.Histogram;
+//import io.prometheus.*;
+
 
 @RestController
 public class Controller {
+    // MeterRegistry registry = new MetricRegistry();
+    // MeterRegistry mr = new MeterRegistry();
+    
+    @Autowired
+    MeterRegistry meterRegistry;
+    
+    
+
+    //static final Histogram get_resp_shipping_count = Histogram.build().name("get_resp_shipping_count").help("Request latency in seconds.").register(); 
+    /* Histogram.Builder builder = Histogram.build().name("get_resp_shipping_count").help("rts")
+          .buckets(0.001,0.01,0.1,1,10); */
+    //Histogram get_resp_shipping_count = builder.create();
+    //get_resp_shipping_count.register();
+    //static final Histogram get_resp_shipping_count = create()
+    /* Histogram.Builder().b 
+        .name("get_resp_shipping_count").help("Request latency in seconds.").register(); */
+
+    //Histogram get_resp_shipping_count = Histogram.build().name("get_resp_shipping_count").help("Request latency in seconds.").register(meterRegistry);
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
 
     private String CART_URL = String.format("http://%s/shipping/", getenv("CART_ENDPOINT", "cart"));
@@ -37,6 +65,12 @@ public class Controller {
 
         return val;
     }
+
+    /* @GetMapping("/metrics")
+    public String metrics() {
+        get_resp_shipping_count.observe(Math.random());
+        return meterRegistry.Histogram;
+    } */
 
     @GetMapping(path = "/memory")
     public int memory() {
@@ -61,8 +95,13 @@ public class Controller {
 
     @GetMapping("/count")
     public String count() {
+        //Histogram.Timer requestTimer = get_resp_shipping_count.startTimer();
+        //double start = System.currentTimeMillis();
         long count = cityrepo.count();
-
+        //double finish = System.currentTimeMillis();
+        //double timeElapsed = finish - start;
+        //get_resp_shipping_count.observe(timeElapsed);
+        //requestTimer.observeDuration();
         return String.valueOf(count);
     }
 
@@ -107,6 +146,8 @@ public class Controller {
 
     @GetMapping("/calc/{id}")
     public Ship caclc(@PathVariable long id) {
+
+        // intrument this
         double homeLatitude = 51.164896;
         double homeLongitude = 7.068792;
 
@@ -124,8 +165,15 @@ public class Controller {
         Ship ship = new Ship(distance, cost);
         logger.info("shipping {}", ship);
 
+
         return ship;
     }
+
+    /* @GetMapping("/metrics")
+    public Histogram metrics() {
+        return get_resp_shipping_count;
+    } */
+
 
     // enforce content type
     @PostMapping(path = "/confirm/{id}", consumes = "application/json", produces = "application/json")
