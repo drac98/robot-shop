@@ -30,6 +30,7 @@ PromMetrics = {}
 PromMetrics['SOLD_COUNTER'] = Counter('sold_count', 'Running count of items sold')
 PromMetrics['AUS'] = Histogram('units_sold', 'Avergae Unit Sale', buckets=(1, 2, 5, 10, 100))
 PromMetrics['AVS'] = Histogram('cart_value', 'Avergae Value Sale', buckets=(100, 200, 500, 1000, 2000, 5000, 10000))
+PromMetrics['RESPONSE_TIME'] = Histogram('rt_web_post_payment', 'Pay response time', buckets=(0, 1, 3, 5, 10))
 
 
 @app.errorhandler(Exception)
@@ -52,6 +53,13 @@ def metrics():
 
 
 @app.route('/pay/<id>', methods=['POST'])
+def proccess_pay(id): #Calculates response time taken to process and send the response
+    start = time.time()
+    res = pay(id)
+    PromMetrics['RESPONSE_TIME'].observe((time.time()-start)) # in seconds
+    # time.time() gives time to 1us precision, for 1ns use time.perf_counter_ns()
+    return res
+
 def pay(id):
     app.logger.info('payment for {}'.format(id))
     cart = request.get_json()
@@ -146,7 +154,6 @@ def countItems(items):
 
 # RabbitMQ
 publisher = Publisher(app.logger)
-
 if __name__ == "__main__":
     sh = logging.StreamHandler(sys.stdout)
     sh.setLevel(logging.INFO)
