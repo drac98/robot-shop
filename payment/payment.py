@@ -30,7 +30,7 @@ PromMetrics = {}
 PromMetrics['SOLD_COUNTER'] = Counter('sold_count', 'Running count of items sold')
 PromMetrics['AUS'] = Histogram('units_sold', 'Avergae Unit Sale', buckets=(1, 2, 5, 10, 100))
 PromMetrics['AVS'] = Histogram('cart_value', 'Avergae Value Sale', buckets=(100, 200, 500, 1000, 2000, 5000, 10000))
-PromMetrics['RESPONSE_TIME'] = Histogram('rt_payment_post_rabbitmq', 'Pay response time', buckets=(0, 1, 3, 5, 10))
+PromMetrics['RESPONSE_TIME'] = Histogram('rt_payment_post_rabbitmq', 'Pay response time', buckets=(0,10,50,100,200,500,1000,5000,10000))
 
 
 @app.errorhandler(Exception)
@@ -56,7 +56,7 @@ def metrics():
 def proccess_pay(id): #Calculates response time taken to process and send the response
     start = time.time()
     res = pay(id)
-    PromMetrics['RESPONSE_TIME'].observe((time.time()-start)) # in seconds
+    PromMetrics['RESPONSE_TIME'].observe(int((time.time()-start)*1000)) # in seconds
     # time.time() gives time to 1us precision, for 1ns use time.perf_counter_ns()
     return res
 

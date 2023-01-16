@@ -25,7 +25,7 @@ const rt_user_get_redis = new promClient.Histogram(
     {
         name: 'rt_user_get_redis',
         help: 'response time of redis GET request from user',
-        buckets: [0, 0.05, 0.1, 0.2, 1, 50, 100, 150],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
@@ -34,7 +34,7 @@ const rt_user_get_mongo_checkid = new promClient.Histogram(
     {
         name: 'rt_user_get_mongo_checkid',
         help: 'response time of mongo user id GET request from user',
-        buckets: [0, 0.05, 0.1, 0.2, 1, 50, 100, 150],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
@@ -43,7 +43,7 @@ const rt_user_get_mongo_users = new promClient.Histogram(
     {
         name: 'rt_user_get_mongo_users',
         help: 'response time of mongo users GET request from user',
-        buckets: [0, 0.05, 0.1, 0.2, 1, 50, 100, 150],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
@@ -52,7 +52,7 @@ const rt_user_post_login = new promClient.Histogram(
     {
         name: 'rt_user_post_login',
         help: 'response time of login POST request from user',
-        buckets: [0, 0.05, 0.1, 0.2, 1, 50, 100, 150],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
@@ -61,7 +61,7 @@ const rt_user_post_register = new promClient.Histogram(
     {
         name: 'rt_user_post_register',
         help: 'response time of register POST request from user',
-        buckets: [0, 0.05, 0.1, 0.2, 1, 50, 100, 150],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
@@ -70,7 +70,7 @@ const rt_user_post_order = new promClient.Histogram(
     {
         name: 'rt_user_post_order',
         help: 'response time of order POST request from user',
-        buckets: [0, 0.05, 0.1, 0.2, 1, 50, 100, 150],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
@@ -79,7 +79,7 @@ const rt_user_get_mongo_history = new promClient.Histogram(
     {
         name: 'rt_user_get_mongo_history',
         help: 'response time of mongo history GET request from user',
-        buckets: [0, 0.05, 0.1, 0.2, 1, 50, 100, 150],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );

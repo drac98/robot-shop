@@ -41,7 +41,7 @@ var (
         prometheus.HistogramOpts{
             Name:        "rt_dispatch_consume_rabbitmq",
             Help:        "Response time of dispatcher consuming rabbitmq",
-            Buckets:     prometheus.ExponentialBuckets(0.0001, 10, 5), //LinearBuckets
+            Buckets:     prometheus.ExponentialBuckets(12.5, 2, 10), //LinearBuckets
         },
         //[]string{"endpoint"}, //for histogramVec type
     )
@@ -250,7 +250,7 @@ func main() {
 				log.Printf("Headers %v\n", d.Headers)
 				id := getOrderId(d.Body)
 				go createSpan(d.Headers, id)
-				rt_histogram.Observe(float64(time.Since(start).Nanoseconds())) //Microseconds,Milliseconds change as needed
+				rt_histogram.Observe(float64(time.Since(start).Milliseconds())) //Microseconds,Milliseconds change as needed
 			}
 		}
 	}()
