@@ -2,6 +2,7 @@ package com.instana.robotshop.shipping;
 
 import java.util.List;
 import java.util.Arrays;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.Collections;
 import org.slf4j.Logger;
@@ -9,10 +10,6 @@ import org.slf4j.LoggerFactory;
 
 import org.springframework.data.domain.Sort;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.autoconfigure.EnableAutoConfiguration;
-import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.ComponentScan;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -20,37 +17,18 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
 import org.springframework.http.HttpStatus;
-import org.springframework.beans.factory.annotation.Autowired;
 import io.micrometer.core.instrument.MeterRegistry;
-import io.micrometer.core.instrument.simple.*;
-import io.prometheus.client.Histogram;
-//import io.prometheus.*;
+
 
 
 @RestController
 public class Controller {
-    // MeterRegistry registry = new MetricRegistry();
-    // MeterRegistry mr = new MeterRegistry();
+
     
     @Autowired
     MeterRegistry meterRegistry;
-    
-    
-
-    //static final Histogram get_resp_shipping_count = Histogram.build().name("get_resp_shipping_count").help("Request latency in seconds.").register(); 
-    /* Histogram.Builder builder = Histogram.build().name("get_resp_shipping_count").help("rts")
-          .buckets(0.001,0.01,0.1,1,10); */
-    //Histogram get_resp_shipping_count = builder.create();
-    //get_resp_shipping_count.register();
-    //static final Histogram get_resp_shipping_count = create()
-    /* Histogram.Builder().b 
-        .name("get_resp_shipping_count").help("Request latency in seconds.").register(); */
-
-    //Histogram get_resp_shipping_count = Histogram.build().name("get_resp_shipping_count").help("Request latency in seconds.").register(meterRegistry);
     private static final Logger logger = LoggerFactory.getLogger(Controller.class);
-
     private String CART_URL = String.format("http://%s/shipping/", getenv("CART_ENDPOINT", "cart"));
-
     public static List bytesGlobal = Collections.synchronizedList(new ArrayList<byte[]>());
 
     @Autowired
@@ -66,25 +44,25 @@ public class Controller {
         return val;
     }
 
-    /* @GetMapping("/metrics")
-    public String metrics() {
-        get_resp_shipping_count.observe(Math.random());
-        return meterRegistry.Histogram;
-    } */
-
     @GetMapping(path = "/memory")
     public int memory() {
+        //long start = System.currentTimeMillis();
         byte[] bytes = new byte[1024 * 1024 * 25];
         Arrays.fill(bytes,(byte)8);
         bytesGlobal.add(bytes);
-
+        //long finish = System.currentTimeMillis();
+        //long timeElapsed = finish - start;
+        //meterRegistry.timer("shipping_get_memory_rt").record(Duration.ofMillis(timeElapsed));
         return bytesGlobal.size();
     }
 
     @GetMapping(path = "/free")
     public int free() {
+        //long start = System.currentTimeMillis();
         bytesGlobal.clear();
-
+        //long finish = System.currentTimeMillis();
+        //long timeElapsed = finish - start;
+        //meterRegistry.timer("shipping_get_free_rt").record(Duration.ofMillis(timeElapsed));
         return bytesGlobal.size();
     }
 
@@ -95,36 +73,42 @@ public class Controller {
 
     @GetMapping("/count")
     public String count() {
-        //Histogram.Timer requestTimer = get_resp_shipping_count.startTimer();
-        //double start = System.currentTimeMillis();
+        // Histogram.Timer requestTimer = requestLatency.startTimer();
+        long start = System.currentTimeMillis();
         long count = cityrepo.count();
-        //double finish = System.currentTimeMillis();
-        //double timeElapsed = finish - start;
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+        meterRegistry.timer("rt_shipping_get_count").record(Duration.ofMillis(timeElapsed));
         //get_resp_shipping_count.observe(timeElapsed);
-        //requestTimer.observeDuration();
+        // requestTimer.observeDuration(); 
         return String.valueOf(count);
     }
 
     @GetMapping("/codes")
     public Iterable<Code> codes() {
+        long start = System.currentTimeMillis();
         logger.info("all codes");
-
         Iterable<Code> codes = coderepo.findAll(Sort.by(Sort.Direction.ASC, "name"));
-
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+        meterRegistry.timer("rt_shipping_get_code").record(Duration.ofMillis(timeElapsed));
         return codes;
     }
 
     @GetMapping("/cities/{code}")
     public List<City> cities(@PathVariable String code) {
+        long start = System.currentTimeMillis();
         logger.info("cities by code {}", code);
-
         List<City> cities = cityrepo.findByCode(code);
-
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+        meterRegistry.timer("rt_shipping_get_citiescode").record(Duration.ofMillis(timeElapsed));
         return cities;
     }
 
     @GetMapping("/match/{code}/{text}")
     public List<City> match(@PathVariable String code, @PathVariable String text) {
+        long start = System.currentTimeMillis();
         logger.info("match code {} text {}", code, text);
 
         if (text.length() < 3) {
@@ -140,13 +124,15 @@ public class Controller {
         if (cities.size() > 10) {
             cities = cities.subList(0, 9);
         }
-
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+        meterRegistry.timer("rt_shipping_get_matchcode").record(Duration.ofMillis(timeElapsed));
         return cities;
     }
 
     @GetMapping("/calc/{id}")
     public Ship caclc(@PathVariable long id) {
-
+        long start = System.currentTimeMillis();
         // intrument this
         double homeLatitude = 51.164896;
         double homeLongitude = 7.068792;
@@ -164,7 +150,9 @@ public class Controller {
         double cost = Math.rint(distance * 5) / 100.0;
         Ship ship = new Ship(distance, cost);
         logger.info("shipping {}", ship);
-
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+        meterRegistry.timer("rt_shipping_get_calcid").record(Duration.ofMillis(timeElapsed));
 
         return ship;
     }
@@ -178,6 +166,7 @@ public class Controller {
     // enforce content type
     @PostMapping(path = "/confirm/{id}", consumes = "application/json", produces = "application/json")
     public String confirm(@PathVariable String id, @RequestBody String body) {
+        long start = System.currentTimeMillis();
         logger.info("confirm id: {}", id);
         logger.info("body {}", body);
 
@@ -187,7 +176,9 @@ public class Controller {
         if (cart.equals("")) {
             throw new ResponseStatusException(HttpStatus.NOT_FOUND, "cart not found");
         }
-
+        long finish = System.currentTimeMillis();
+        long timeElapsed = finish - start;
+        meterRegistry.timer("rt_shipping_post_confirm").record(Duration.ofMillis(timeElapsed));
         return cart;
     }
 }
