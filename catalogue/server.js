@@ -43,61 +43,61 @@ const register = new Registry();
 }); */
 
 //  get all products response time
-const get_resp_catalogue_all_products = new promClient.Histogram(
+const rt_web_get_catalogue_allproduts = new promClient.Histogram(
     {
-        name: 'get_resp_catalogue_all_products',
+        name: 'rt_web_get_catalogue_allproduts',
         help: 'response time of get all products from catalogue service',
-        buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5,2],
+        buckets: [0,0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5,2],
         registers: [register]
     }
     );
 
 //  get all products in order response time
-const get_resp_catalogue_all_products_ordered = new promClient.Histogram(
+/* const get_resp_catalogue_all_products_ordered = new promClient.Histogram(
     {
         name: 'get_resp_catalogue_all_products_ordered',
         help: 'response time of get  products in order from catalogue service',
-        buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1,1.5,2],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register]
     }
-    );
+    ); */
 
 //  get all products in category response time
-const get_resp_catalogue_category_products = new promClient.Histogram(
+const rt_web_get_catalogue_productsfromcategories = new promClient.Histogram(
     {
-        name: 'get_resp_catalogue_category_products',
+        name: 'rt_web_get_catalogue_productsfromcategories',
         help: 'response time of get  products in order from catalogue service',
-        buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5, 2],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register]
     }
     );
 
 //  get products by name and description response time
-const get_resp_catalogue_search_name_desc = new promClient.Histogram(
+const rt_web_get_catalogue_search = new promClient.Histogram(
     {
-        name: 'get_resp_catalogue_search_name_desc',
+        name: 'rt_web_get_catalogue_search',
         help: 'response time of searching  products in from catalogue',
-        buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5, 2],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register]
     }
     );
 
 // get products by category 
-const get_resp_catalogue_get_categories = new promClient.Histogram(
+const rt_web_get_catalogue_categories = new promClient.Histogram(
     {
-        name: 'search_name_categories_rt',
+        name: 'rt_web_get_catalogue_categories',
         help: 'response time of searching  products in from catalogue',
-        buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5, 2],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register]
     }
     );
 
 // get products by sku
-const get_sku_products_rt = new promClient.Histogram(
+const rt_web_get_catalogue_productsku = new promClient.Histogram(
     {
-        name: 'search_products_sku_rt',
+        name: 'rt_web_get_catalogue_productsku',
         help: 'response time of searching  products in from catalogue',
-        buckets: [0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5, 2],
+        buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register]
     }
     );
@@ -151,7 +151,7 @@ app.get('/products', (req, res) => {
     }
     // End timing service: redis(/get)
     var elapsed = new Date().getTime() - start; 
-    get_resp_catalogue_all_products.observe(elapsed);
+    rt_web_get_catalogue_allproduts.observe(elapsed);
 });
 
 // product by SKU
@@ -179,7 +179,7 @@ app.get('/product/:sku', (req, res) => {
     }
     // End timing service: redis(/get)
     var elapsed = new Date().getTime() - start; 
-    get_sku_products_rt.observe(elapsed);
+    rt_web_get_catalogue_productsku.observe(elapsed);
 });
 
 // products in a category
@@ -201,7 +201,7 @@ app.get('/products/:cat', (req, res) => {
         res.status(500).send('database not avaiable');
     }
     var elapsed = new Date().getTime() - start; 
-    get_resp_catalogue_category_products.observe(elapsed);
+    rt_web_get_catalogue_productsfromcategories.observe(elapsed);
 });
 
 // all categories
@@ -218,8 +218,8 @@ app.get('/categories', (req, res) => {
         req.log.error('database not available');
         res.status(500).send('database not available');
     }
-    var elapsed = new Date().getTime() - start; 
-    get_resp_catalogue_get_categories.observe(elapsed);
+    var elapsed = (new Date().getTime() - start); 
+    rt_web_get_catalogue_categories.observe(elapsed);
 });
 
 // search name and description
@@ -237,7 +237,7 @@ app.get('/search/:text', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; 
-    get_resp_catalogue_search_name_desc.observe(elapsed);
+    rt_web_get_catalogue_search.observe(elapsed);
 });
 
 // Prometheus

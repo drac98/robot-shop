@@ -91,7 +91,7 @@ public class Controller {
         Iterable<Code> codes = coderepo.findAll(Sort.by(Sort.Direction.ASC, "name"));
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
-        meterRegistry.timer("rt_shipping_get_code").record(Duration.ofMillis(timeElapsed));
+        meterRegistry.timer("rt_web_get_shipping_code").record(Duration.ofMillis(timeElapsed));
         return codes;
     }
 
@@ -126,7 +126,7 @@ public class Controller {
         }
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
-        meterRegistry.timer("rt_shipping_get_matchcode").record(Duration.ofMillis(timeElapsed));
+        meterRegistry.timer("rt_web_get_shipping_matchcode").record(Duration.ofMillis(timeElapsed));
         return cities;
     }
 
@@ -152,7 +152,7 @@ public class Controller {
         logger.info("shipping {}", ship);
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
-        meterRegistry.timer("rt_shipping_get_calcid").record(Duration.ofMillis(timeElapsed));
+        meterRegistry.timer("rt_web_get_shipping_calcid").record(Duration.ofMillis(timeElapsed));
 
         return ship;
     }
@@ -178,7 +178,7 @@ public class Controller {
         }
         long finish = System.currentTimeMillis();
         long timeElapsed = finish - start;
-        meterRegistry.timer("rt_shipping_post_confirm").record(Duration.ofMillis(timeElapsed));
+        meterRegistry.timer("rt_web_get_shipping_postconfirm").record(Duration.ofMillis(timeElapsed));
         return cart;
     }
 }
