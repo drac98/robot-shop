@@ -181,13 +181,10 @@ func main() {
 	prometheus.MustRegister(rt_histogram)
     prometheus.Gatherers{}.Gather()
 	//start := time.Now()
-	rt_histogram.Observe(0.33)
 	
 	go func(){
 		http.Handle("/metrics", promhttp.Handler())
-        log.Println("in prom2")
-        err := http.ListenAndServe(":8080", nil)
-        log.Println("in prom3")
+		err := http.ListenAndServe(":8080", nil)
         log.Println(err)
         if err != nil {
             return
