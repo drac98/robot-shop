@@ -48,28 +48,28 @@ const rt_user_get_mongo_users = new promClient.Histogram(
     }
 );
 
-const rt_user_post_login = new promClient.Histogram(
+const rt_web_post_user_login = new promClient.Histogram(
     {
-        name: 'rt_user_post_login',
-        help: 'response time of login POST request from user',
+        name: 'rt_web_post_user_login',
+        help: 'response time of login',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
 
-const rt_user_post_register = new promClient.Histogram(
+const rt_web_post_user_register = new promClient.Histogram(
     {
-        name: 'rt_user_post_register',
-        help: 'response time of register POST request from user',
+        name: 'rt_web_post_user_register',
+        help: 'response time of register',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
 
-const rt_user_post_order = new promClient.Histogram(
+const rt_web_post_user_order = new promClient.Histogram(
     {
-        name: 'rt_user_post_order',
-        help: 'response time of order POST request from user',
+        name: 'rt_web_post_user_order',
+        help: 'response time of order',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
@@ -232,7 +232,7 @@ app.post('/login', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; // End timing service: login(/post)
-    rt_user_post_login.observe(elapsed)
+    rt_web_post_user_login.observe(elapsed)
 });
 
 // TODO - validate email address format
@@ -272,7 +272,7 @@ app.post('/register', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; // End timing service: register(/post)
-    rt_user_post_register.observe(elapsed)
+    rt_web_post_user_register.observe(elapsed)
 });
 
 app.post('/order/:id', (req, res) => {
@@ -330,7 +330,7 @@ app.post('/order/:id', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; // End timing service: order(/post)
-    rt_user_post_order.observe(elapsed)
+    rt_web_post_user_order.observe(elapsed)
 });
 
 app.get('/history/:id', (req, res) => {

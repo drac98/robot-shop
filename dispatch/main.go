@@ -39,7 +39,7 @@ var (
 	}
 	rt_histogram = prometheus.NewHistogram(
         prometheus.HistogramOpts{
-            Name:        "rt_dispatch_consume_rabbitmq",
+            Name:        "rt_dispatch_get_rabbitmq",
             Help:        "Response time of dispatcher consuming rabbitmq",
             Buckets:     prometheus.ExponentialBuckets(12.5, 2, 10), //LinearBuckets
         },

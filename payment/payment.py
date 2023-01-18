@@ -30,7 +30,10 @@ PromMetrics = {}
 PromMetrics['SOLD_COUNTER'] = Counter('sold_count', 'Running count of items sold')
 PromMetrics['AUS'] = Histogram('units_sold', 'Avergae Unit Sale', buckets=(1, 2, 5, 10, 100))
 PromMetrics['AVS'] = Histogram('cart_value', 'Avergae Value Sale', buckets=(100, 200, 500, 1000, 2000, 5000, 10000))
-PromMetrics['RESPONSE_TIME'] = Histogram('rt_payment_post_rabbitmq', 'Pay response time', buckets=(0,10,50,100,200,500,1000,5000,10000))
+PromMetrics['rt_web_post_payment'] = Histogram('rt_web_post_payment', 'Pay response time', buckets=(0,10,50,100,200,500,1000,5000,10000))
+PromMetrics['rt_payment_post_user'] = Histogram('rt_payment_post_user', 'Post order response time', buckets=(0,10,50,100,200,500,1000,5000,10000))
+PromMetrics['rt_payment_get_user'] = Histogram('rt_payment_get_user', 'Check user id response time', buckets=(0,10,50,100,200,500,1000,5000,10000))
+PromMetrics['rt_payment_delete_cart'] = Histogram('rt_payment_delete_cart', 'Delete cart response time', buckets=(0,10,50,100,200,500,1000,5000,10000))
 
 
 @app.errorhandler(Exception)
@@ -56,7 +59,7 @@ def metrics():
 def proccess_pay(id): #Calculates response time taken to process and send the response
     start = time.time()
     res = pay(id)
-    PromMetrics['RESPONSE_TIME'].observe(int((time.time()-start)*1000)) # in seconds
+    PromMetrics['rt_web_post_payment'].observe(int((time.time()-start)*1000)) # in seconds
     # time.time() gives time to 1us precision, for 1ns use time.perf_counter_ns()
     return res
 
@@ -69,7 +72,9 @@ def pay(id):
 
     # check user exists
     try:
+        start = time.time()
         req = requests.get('http://{user}:8080/check/{id}'.format(user=USER, id=id))
+        PromMetrics['rt_payment_get_user'].observe(int((time.time()-start)*1000))
     except requests.exceptions.RequestException as err:
         app.logger.error(err)
         return str(err), 500
@@ -111,17 +116,21 @@ def pay(id):
     # add to order history
     if not anonymous_user:
         try:
+            start = time.time()
             req = requests.post('http://{user}:8080/order/{id}'.format(user=USER, id=id),
                     data=json.dumps({'orderid': orderid, 'cart': cart}),
                     headers={'Content-Type': 'application/json'})
             app.logger.info('order history returned {}'.format(req.status_code))
+            PromMetrics['rt_payment_post_user'].observe(int((time.time()-start)*1000))
         except requests.exceptions.RequestException as err:
             app.logger.error(err)
             return str(err), 500
 
     # delete cart
     try:
+        start = time.time()
         req = requests.delete('http://{cart}:8080/cart/{id}'.format(cart=CART, id=id));
+        PromMetrics['rt_payment_delete_cart'].observe(int((time.time()-start)*1000))
         app.logger.info('cart delete returned {}'.format(req.status_code))
     except requests.exceptions.RequestException as err:
         app.logger.error(err)
