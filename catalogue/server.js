@@ -43,9 +43,9 @@ const register = new Registry();
 }); */
 
 //  get all products response time
-const rt_web_get_catalogue_allproduts = new promClient.Histogram(
+const rt_catalogue_get_mongo_products = new promClient.Histogram(
     {
-        name: 'rt_web_get_catalogue_allproduts',
+        name: 'rt_catalogue_get_mongo_products',
         help: 'response time of get all products from catalogue service',
         buckets: [0,0.01, 0.05, 0.5, 0.9, 0.95, 0.99, 1, 1.5,2],
         registers: [register]
@@ -63,9 +63,9 @@ const rt_web_get_catalogue_allproduts = new promClient.Histogram(
     ); */
 
 //  get all products in category response time
-const rt_web_get_catalogue_productsfromcategories = new promClient.Histogram(
+const rt_catalogue_get_mongo_productscat = new promClient.Histogram(
     {
-        name: 'rt_web_get_catalogue_productsfromcategories',
+        name: 'rt_catalogue_get_mongo_productscat',
         help: 'response time of get  products in order from catalogue service',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register]
@@ -73,9 +73,9 @@ const rt_web_get_catalogue_productsfromcategories = new promClient.Histogram(
     );
 
 //  get products by name and description response time
-const rt_web_get_catalogue_search = new promClient.Histogram(
+const rt_catalogue_get_mongo_search = new promClient.Histogram(
     {
-        name: 'rt_web_get_catalogue_search',
+        name: 'rt_catalogue_get_mongo_search',
         help: 'response time of searching  products in from catalogue',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register]
@@ -83,9 +83,9 @@ const rt_web_get_catalogue_search = new promClient.Histogram(
     );
 
 // get products by category 
-const rt_web_get_catalogue_categories = new promClient.Histogram(
+const rt_catalogue_get_mongo_categories = new promClient.Histogram(
     {
-        name: 'rt_web_get_catalogue_categories',
+        name: 'rt_catalogue_get_mongo_categories',
         help: 'response time of searching  products in from catalogue',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register]
@@ -93,9 +93,9 @@ const rt_web_get_catalogue_categories = new promClient.Histogram(
     );
 
 // get products by sku
-const rt_web_get_catalogue_productsku = new promClient.Histogram(
+const rt_catalogue_get_mongo_productsku = new promClient.Histogram(
     {
-        name: 'rt_web_get_catalogue_productsku',
+        name: 'rt_catalogue_get_mongo_productsku',
         help: 'response time of searching  products in from catalogue',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register]
@@ -151,7 +151,7 @@ app.get('/products', (req, res) => {
     }
     // End timing service: redis(/get)
     var elapsed = new Date().getTime() - start; 
-    rt_web_get_catalogue_allproduts.observe(elapsed);
+    rt_catalogue_get_mongo_products.observe(elapsed);
 });
 
 // product by SKU
@@ -179,7 +179,7 @@ app.get('/product/:sku', (req, res) => {
     }
     // End timing service: redis(/get)
     var elapsed = new Date().getTime() - start; 
-    rt_web_get_catalogue_productsku.observe(elapsed);
+    rt_catalogue_get_mongo_productsku.observe(elapsed);
 });
 
 // products in a category
@@ -201,7 +201,7 @@ app.get('/products/:cat', (req, res) => {
         res.status(500).send('database not avaiable');
     }
     var elapsed = new Date().getTime() - start; 
-    rt_web_get_catalogue_productsfromcategories.observe(elapsed);
+    rt_catalogue_get_mongo_productscat.observe(elapsed);
 });
 
 // all categories
@@ -219,7 +219,7 @@ app.get('/categories', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = (new Date().getTime() - start); 
-    rt_web_get_catalogue_categories.observe(elapsed);
+    rt_catalogue_get_mongo_categories.observe(elapsed);
 });
 
 // search name and description
@@ -237,7 +237,7 @@ app.get('/search/:text', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; 
-    rt_web_get_catalogue_search.observe(elapsed);
+    rt_catalogue_get_mongo_search.observe(elapsed);
 });
 
 // Prometheus
