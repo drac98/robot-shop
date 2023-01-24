@@ -38,9 +38,10 @@ class CatalogueService implements LoggerAwareInterface
      * @Route("/metrics", methods={"GET"})
      */
     public function metrics(Request $request): Response
-    {   $metrics = "rt_ratings_get_catalogue_product_sum ". strval($this->rt_ratings_get_catalogue_product_sum). " \rt_ratings_get_catalogue_product_count " . strval($this->rt_ratings_get_catalogue_product_count);
+    {   $metrics = "rt_ratings_get_catalogue_product_sum ". strval($this->rt_ratings_get_catalogue_product_sum). " \nrt_ratings_get_catalogue_product_count " . strval($this->rt_ratings_get_catalogue_product_count)."\n";
         header("Content-type: text/plain");
-        return new JsonResponse($metrics,Response::HTTP_OK);
+        //echo $metrics;
+        return new Response($metrics, 200, ['Content-type' => 'text/plain']);
     }    
 
     public function checkSKU(string $sku): bool

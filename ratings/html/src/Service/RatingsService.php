@@ -41,9 +41,10 @@ class RatingsService implements LoggerAwareInterface
      * @Route("/metrics", methods={"GET"})
      */
     public function metrics(Request $request): Response
-    {   $metrics = "rt_web_get_ratings_sum ". strval($this->rt_web_get_ratings_sum). " \rt_web_get_ratings_count " . strval($this->rt_web_get_ratings_count);
+    {   $metrics = "rt_web_get_ratings_sum ". strval($this->rt_web_get_ratings_sum). " \nrt_web_get_ratings_count " . strval($this->rt_web_get_ratings_count)."\n";
         header("Content-type: text/plain");
-        return new JsonResponse($metrics,Response::HTTP_OK);
+        //echo $metrics;
+        return new Response($metrics, 200, ['Content-type' => 'text/plain']);
     }   
 
     public function ratingBySku(string $sku): array
