@@ -36,10 +36,31 @@ else
 fi
 
 echo "Starting $CLIENTS clients for ${RUN_TIME:-ever}"
-if [ "$SILENT" -eq 1 ]
-then
-    locust -f robot-shop.py --host "$HOST" --headless -r 1 -u $NUM_CLIENTS $TIME > /dev/null 2>&1
-else
-    locust -f robot-shop.py --host "$HOST" --headless -r 1 -u $NUM_CLIENTS $TIME
-fi
+# if [ "$SILENT" -eq 1 ]
+# then
+#     locust -f robot-shop.py --host "$HOST" --headless -r 1 -u $NUM_CLIENTS $TIME > /dev/null 2>&1
+# else
+#     locust -f robot-shop.py --host "$HOST" --headless -r 1 -u $NUM_CLIENTS $TIME
+# fi
 
+while true; do
+  current_hour=$(date +%H)
+
+  if [ "$current_hour" -lt 2 ]; then
+    NUM_CLIENTS= $(( $RANDOM % 3 ))
+  if [ "$current_hour" -lt 6 ]; then
+    NUM_CLIENTS= $(( $RANDOM % 10 ))
+  elif [ "$current_hour" -lt 12 ]; then
+    NUM_CLIENTS= $(( $RANDOM % 20 ))
+  elif [ "$current_hour" -lt 17 ]; then
+    NUM_CLIENTS= $(( $RANDOM % 30 ))
+  elif [ "$current_hour" -lt 22 ]; then
+    NUM_CLIENTS= $(( $RANDOM % 50 ))
+  else
+    NUM_CLIENTS=5
+  fi
+
+  locust -f robot-shop.py --host "$HOST" --headless -r 1 -u $NUM_CLIENTS -t 30m
+
+  sleep 1800
+done

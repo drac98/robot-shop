@@ -58,14 +58,15 @@ def metrics():
 @app.route('/pay/<id>', methods=['POST'])
 def proccess_pay(id): #Calculates response time taken to process and send the response
     start = time.time()
-    res = pay(id)
-    PromMetrics['rt_web_post_payment'].observe(int((time.time()-start)*1000)) # in seconds
+    cart = request.get_json()
+    res = pay(id,cart)
+    PromMetrics['rt_web_post_payment'].observe(int((time.time()-start)*1000))
     # time.time() gives time to 1us precision, for 1ns use time.perf_counter_ns()
     return res
 
-def pay(id):
+def pay(id,cart):
     app.logger.info('payment for {}'.format(id))
-    cart = request.get_json()
+    
     app.logger.info(cart)
 
     anonymous_user = True
