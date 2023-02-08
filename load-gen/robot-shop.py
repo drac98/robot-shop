@@ -79,12 +79,21 @@ class UserBehavior(HttpUser):
             p_word = generate_random_string(len_cred)
             e_mail = generate_random_string(len_cred)
             fake_ip = random.choice(self.fake_ip_addresses)
-            #random_int = random.randint(0, 2)
+
+            # error case username already in use
+            if randint(1, 10) <= 1:
+                u_name = 'user'
+                p_word = 'password'
+            
             credentials = {
                 'name': u_name,
                 'password': p_word,
                 'email': e_mail
             }
+
+            
+
+
             res = self.client.post('/api/user/register', json=credentials, headers={'x-forwarded-for': fake_ip})
             print('register {}'.format(res.status_code))
             
@@ -110,16 +119,25 @@ class UserBehavior(HttpUser):
             credentials = file.readlines()
             file.close()
             if (len(credentials)!=0):
-                temp_u_name,temp_p_word = random.choice(credentials).split(":")
-                self.u_name = temp_u_name.strip()
-                self.p_word = temp_p_word.strip('\n')
+                u_name,p_word = random.choice(credentials).split(":")
+                u_name = u_name.strip()
+                p_word = p_word.strip('\n')
+
+                self.u_name = u_name
+                self.p_word = p_word
                 #file = open('log.txt','a+')
                 #file.write(self.u_name + ":"+ self.p_word+"\n")
                 #file.close()
+                 # error case wrong user name and password
+                if randint(1, 10) <= 1:
+                    u_name = ''
+                    p_word = ''
                 credentials = {
-                        'name': self.u_name,
-                        'password': self.p_word
+                        'name': u_name,
+                        'password': p_word
                         }
+           
+
             res = self.client.post('/api/user/login', json=credentials, headers={'x-forwarded-for': fake_ip})
             #print('login {}'.format(res.status_code))
             #user = self.client.get('/api/user/uniqueid', headers={'x-forwarded-for': fake_ip}).json()
@@ -130,8 +148,6 @@ class UserBehavior(HttpUser):
         @task(1)
         def load(self):
             fake_ip = random.choice(self.fake_ip_addresses)
-
-
             self.client.get('/', headers={'x-forwarded-for': fake_ip})
             user = self.client.get('/api/user/uniqueid', headers={'x-forwarded-for': fake_ip}).json()
             uniqueid = self.u_name
@@ -162,8 +178,9 @@ class UserBehavior(HttpUser):
 
             cart = self.client.get('/api/cart/cart/{}'.format(uniqueid), headers={'x-forwarded-for': fake_ip}).json()
             item = choice(cart['items'])
-            self.client.get('/api/cart/update/{}/{}/2'.format(uniqueid, item['sku']), headers={'x-forwarded-for': fake_ip})
-
+            if randint(1, 10) <= 7:
+                # random cart updates
+                self.client.get('/api/cart/update/{}/{}/2'.format(uniqueid, item['sku']), headers={'x-forwarded-for': fake_ip})
             # country codes
             code = choice(self.client.get('/api/shipping/codes', headers={'x-forwarded-for': fake_ip}).json())
             city = choice(self.client.get('/api/shipping/cities/{}'.format(code['code']), headers={'x-forwarded-for': fake_ip}).json())
@@ -172,11 +189,12 @@ class UserBehavior(HttpUser):
             shipping['location'] = '{} {}'.format(code['name'], city['name'])
             print('Shipping {}'.format(shipping))
             # POST
-            cart = self.client.post('/api/shipping/confirm/{}'.format(uniqueid), json=shipping, headers={'x-forwarded-for': fake_ip}).json()
-            print('Final cart {}'.format(cart))
-
-            order = self.client.post('/api/payment/pay/{}'.format(uniqueid), json=cart, headers={'x-forwarded-for': fake_ip}).json()
-            print('Order {}'.format(order))
+            if randint(1, 10) <= 8:
+                # checked price and did not proceed
+                cart = self.client.post('/api/shipping/confirm/{}'.format(uniqueid), json=shipping, headers={'x-forwarded-for': fake_ip}).json()
+                print('Final cart {}'.format(cart))
+                order = self.client.post('/api/payment/pay/{}'.format(uniqueid), json=cart, headers={'x-forwarded-for': fake_ip}).json()
+                print('Order {}'.format(order))
 
         @task(1)
         def get_history(self):

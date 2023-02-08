@@ -48,27 +48,27 @@ const rt_user_get_mongo_users = new promClient.Histogram(
     }
 );
 
-const rt_web_post_user_login = new promClient.Histogram(
+const rt_user_post_mongo_login = new promClient.Histogram(
     {
-        name: 'rt_web_post_user_login',
+        name: 'rt_user_post_mongo_login',
         help: 'response time of login',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
 
-const rt_web_post_user_register = new promClient.Histogram(
+const rt_user_post_mongo_register = new promClient.Histogram(
     {
-        name: 'rt_web_post_user_register',
+        name: 'rt_user_post_mongo_register',
         help: 'response time of register',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
     }
 );
 
-const rt_web_post_user_order = new promClient.Histogram(
+const rt_user_post_mongo_order = new promClient.Histogram(
     {
-        name: 'rt_web_post_user_order',
+        name: 'rt_user_post_mongo_order',
         help: 'response time of order',
         buckets: [0,10,50,100,200,500,1000,5000,10000],
         registers: [register],
@@ -232,7 +232,7 @@ app.post('/login', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; // End timing service: login(/post)
-    rt_web_post_user_login.observe(elapsed)
+    rt_user_post_mongo_login.observe(elapsed)
 });
 
 // TODO - validate email address format
@@ -272,7 +272,7 @@ app.post('/register', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; // End timing service: register(/post)
-    rt_web_post_user_register.observe(elapsed)
+    rt_user_post_mongo_register.observe(elapsed)
 });
 
 app.post('/order/:id', (req, res) => {
@@ -330,7 +330,7 @@ app.post('/order/:id', (req, res) => {
         res.status(500).send('database not available');
     }
     var elapsed = new Date().getTime() - start; // End timing service: order(/post)
-    rt_web_post_user_order.observe(elapsed)
+    rt_user_post_mongo_order.observe(elapsed)
 });
 
 app.get('/history/:id', (req, res) => {
