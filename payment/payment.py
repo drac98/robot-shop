@@ -94,7 +94,7 @@ def pay(id,cart):
         return 'cart not valid', 400
 
     # dummy call to payment gateway, hope they dont object
-    sleep(0.2) # for execute payment 
+    time.sleep(0.2) # for execute payment 
     # try:
     #     req = requests.get(PAYMENT_GATEWAY)
     #     app.logger.info('{} returned {}'.format(PAYMENT_GATEWAY, req.status_code))
