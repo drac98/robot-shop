@@ -94,14 +94,15 @@ def pay(id,cart):
         return 'cart not valid', 400
 
     # dummy call to payment gateway, hope they dont object
-    try:
-        req = requests.get(PAYMENT_GATEWAY)
-        app.logger.info('{} returned {}'.format(PAYMENT_GATEWAY, req.status_code))
-    except requests.exceptions.RequestException as err:
-        app.logger.error(err)
-        return str(err), 500
-    if req.status_code != 200:
-        return 'payment error', req.status_code
+    sleep(0.2) # for execute payment 
+    # try:
+    #     req = requests.get(PAYMENT_GATEWAY)
+    #     app.logger.info('{} returned {}'.format(PAYMENT_GATEWAY, req.status_code))
+    # except requests.exceptions.RequestException as err:
+    #     app.logger.error(err)
+    #     return str(err), 500
+    # if req.status_code != 200:
+    #     return 'payment error', req.status_code
 
     # Prometheus
     # items purchased
