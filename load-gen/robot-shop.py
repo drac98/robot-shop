@@ -203,7 +203,11 @@ class UserBehavior(HttpUser):
             #user = self.client.get('/api/user/uniqueid', headers={'x-forwarded-for': fake_ip}).json()
             uniqueid = self.u_name
             print('User {}'.format(uniqueid))
-            res = self.client.get('/api/user/history/{}'.format(uniqueid),headers={'x-forwarded-for': fake_ip}).json()  
+            try:
+                res = self.client.get('/api/user/history/{}'.format(uniqueid),headers={'x-forwarded-for': fake_ip}).json()  
+            except:
+                pass
+                
             #Debugging
             #file = open('log.txt','a+')
             #file.write('history {} \n'.format(res.status_code))
