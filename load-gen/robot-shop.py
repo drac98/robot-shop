@@ -67,7 +67,7 @@ class UserBehavior(HttpUser):
         ]
         u_name = "username"
         p_word = "admin"
-        wait_time = between(1, 3)
+        wait_time = between(20, 40)
         @task(1)
         def register(self):
             len_cred = random.randrange(5,15+1)
