@@ -3,7 +3,7 @@
 declare(strict_types=1);
 
 namespace Instana\RobotShop\Ratings\Service;
-
+//namespace promphp\prometheus_client_php\Prometheus;
 use PDO;
 use Psr\Log\LoggerAwareInterface;
 use Psr\Log\LoggerAwareTrait;
@@ -11,6 +11,7 @@ use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\Routing\Annotation\Route;
+//use promphp\prometheus_client_php\Prometheus;
 
 /**
  * @Route("/ratservice")
@@ -30,20 +31,22 @@ class RatingsService implements LoggerAwareInterface
     private $rt_web_get_ratings_sum;
     private $rt_web_get_ratings_count;
 
+    
     public function __construct(PDO $connection)
     {
         $this->connection = $connection;
-        $this->rt_web_get_ratings_sum = 0.0;
+        $this->rt_web_get_ratings_sum = 0.0; 
         $this->rt_web_get_ratings_count = 0;
+        
     }
 
     /**
      * @Route("/metrics", methods={"GET"})
      */
     public function metrics(Request $request): Response
-    {   $metrics = "rt_web_get_ratings_sum ". strval($this->rt_web_get_ratings_sum). " \nrt_web_get_ratings_count " . strval($this->rt_web_get_ratings_count)."\n";
+    {   
+        $metrics = "rt_web_get_ratings_sum ". strval($this->rt_web_get_ratings_sum). " \nrt_web_get_ratings_count " . strval($this->rt_web_get_ratings_count)."\n";
         header("Content-type: text/plain");
-        //echo $metrics;
         return new Response($metrics, 200, ['Content-type' => 'text/plain']);
     }   
 
@@ -67,6 +70,7 @@ class RatingsService implements LoggerAwareInterface
         // nicer to return an empty record than throw 404
         $this->rt_web_get_ratings_sum+= microtime()-$start;
         $this->rt_web_get_ratings_count +=1;
+        //$this->histogram->observe(microtime()-$start, ['blue']);
         return ['avg_rating' => 0, 'rating_count' => 0];
     }
 
