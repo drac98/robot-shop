@@ -24,28 +24,15 @@ class CatalogueService implements LoggerAwareInterface
      * @var string
      */
     private $catalogueUrl;
-    private $rt_ratings_get_catalogue_product_sum;
-    private $rt_ratings_get_catalogue_product_count;
 
     public function __construct(string $catalogueUrl)
     {
         $this->catalogueUrl = $catalogueUrl;
-        $this->rt_ratings_get_catalogue_product_sum = 0.0;
-        $this->rt_ratings_get_catalogue_product_count = 0;
     }
-
-    /**
-     * @Route("/metrics", methods={"GET"})
-     */
-    public function metrics(Request $request): Response
-    {   $metrics = "rt_ratings_get_catalogue_product_sum ". strval($this->rt_ratings_get_catalogue_product_sum). " \nrt_ratings_get_catalogue_product_count " . strval($this->rt_ratings_get_catalogue_product_count)."\n";
-        header("Content-type: text/plain");
-        //echo $metrics;
-        return new Response($metrics, 200, ['Content-type' => 'text/plain']);
-    }    
+ 
 
     public function checkSKU(string $sku): bool
-    {   $start = microtime();
+    {   
         $url = sprintf('%s/product/%s', $this->catalogueUrl, $sku);
 
         $opt = [
@@ -64,8 +51,6 @@ class CatalogueService implements LoggerAwareInterface
         $this->logger->info("catalogue status $status");
 
         curl_close($curl);
-        $this->rt_ratings_get_catalogue_product_sum+= microtime()-$start;
-        $this->rt_ratings_get_catalogue_product_count +=1;
         return 200 === $status;
     }
 }

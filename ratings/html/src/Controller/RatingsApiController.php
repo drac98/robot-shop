@@ -91,7 +91,7 @@ class RatingsApiController implements LoggerAwareInterface
             $result = curl_exec($ch);
             curl_close($ch);
             # Print response.
-            echo "<pre>$result</pre>";
+            // echo "<pre>$result</pre>";
             //curl_setopt($ch, CURLOPT_POSTFIELDS, $payload);
             return new JsonResponse([
                 'success' => true,
@@ -130,7 +130,8 @@ class RatingsApiController implements LoggerAwareInterface
         $result = curl_exec($ch);
         curl_close($ch);
         # Print response.
-        echo "<pre>$result</pre>";
-        return new JsonResponse($this->ratingsService->ratingBySku($sku));
+        // echo "<pre>$result</pre>";
+        $rating = $this->ratingsService->ratingBySku($sku);
+        return new JsonResponse($rating);
     }
 }
