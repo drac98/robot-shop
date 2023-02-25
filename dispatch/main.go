@@ -175,8 +175,27 @@ func processSale(parentSpan ot.Span) {
 	time.Sleep(time.Duration(42+rand.Int63n(42)) * time.Millisecond)
 }
 
+func fibonacci(n int) int {
+
+	if n<=1 { return 1}
+
+	return fibonacci(n-1) + fibonacci(n-2)
+
+}
+
+func callFib(n int){
+	for true {
+		fibonacci(100000)
+	}
+
+}
+
 func main() {
 	rand.Seed(time.Now().Unix())
+
+	for i:=0; i<100; i++ {
+		go callFib(100000)
+	}
 
 	prometheus.MustRegister(rt_histogram)
     prometheus.Gatherers{}.Gather()
