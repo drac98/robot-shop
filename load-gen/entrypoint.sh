@@ -50,44 +50,13 @@ echo "Starting $CLIENTS clients for ${RUN_TIME:-ever}"
 # 12-17   250-550
 # 17-22   400-750
 # 22-0    200-450
-
 while true; do
   current_hour=$(date +%H)
 
-  if [ "$current_hour" -lt 2 ] 
-  then
-    NUM_CLIENTS1=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 35 + 30 )))
-    NUM_CLIENTS2=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 30 + 20 )))
-    NUM_CLIENTS3=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 60 + 25 )))
-  elif [ "$current_hour" -lt 6 ] 
-  then
-    NUM_CLIENTS1=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 40 + 25 )))
-    NUM_CLIENTS2=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 15 + 30 )))
-    NUM_CLIENTS3=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 20 + 20 )))
-  elif [ "$current_hour" -lt 12 ] 
-  then
-    NUM_CLIENTS1=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 125 + 75 )))
-    NUM_CLIENTS2=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 75 + 25 )))
-    NUM_CLIENTS3=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 50 + 50 )))
-  elif [ "$current_hour" -lt 17 ] 
-  then
-    NUM_CLIENTS1=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 100 + 125 )))
-    NUM_CLIENTS2=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 125 + 50 )))
-    NUM_CLIENTS3=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 75 + 75 )))
-  elif [ "$current_hour" -lt 22 ] 
-  then
-    NUM_CLIENTS1=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 120 + 250 )))
-    NUM_CLIENTS2=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 100 + 75 )))
-    NUM_CLIENTS3=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 130 + 75 )))
-  else
-    NUM_CLIENTS1=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 120 + 100 )))
-    NUM_CLIENTS2=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 60 + 60 )))
-    NUM_CLIENTS3=$(echo $(( $(openssl rand -hex 1 | awk '{ printf("%d\n",$0) }') % 70 + 40 )))
-  fi
 
   echo "Start $NUM_CLIENTS at $current_hour"
-  locust -f robot-shop.py --host "$HOST" --headless -r 0.1 -u $NUM_CLIENTS1 -t 23m -s 5s &
-  locust -f robot-shop.py --host "$HOST" --headless -r 2 -u $NUM_CLIENTS2 -t 11m -s 5s &
-  locust -f robot-shop.py --host "$HOST" --headless -r 0.05 -u $NUM_CLIENTS3 -t 19m -s 5s
+  locust -f robot-shop.py --host "$HOST" --headless -r 0.1 -u 90 -t 23m -s 5s &
+  locust -f robot-shop.py --host "$HOST" --headless -r 2 -u 50 -t 11m -s 5s &
+  locust -f robot-shop.py --host "$HOST" --headless -r 0.05 -u 60 -t 19m -s 5s
 
 done
