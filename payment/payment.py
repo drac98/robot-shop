@@ -1,5 +1,5 @@
 import random
-
+import threading
 import instana
 import os
 import sys
@@ -35,7 +35,7 @@ PromMetrics['rt_payment_post_user'] = Histogram('rt_payment_post_user', 'Post or
 PromMetrics['rt_payment_get_user'] = Histogram('rt_payment_get_user', 'Check user id response time', buckets=(0,10,50,100,200,500,1000,5000,10000))
 PromMetrics['rt_payment_delete_cart'] = Histogram('rt_payment_delete_cart', 'Delete cart response time', buckets=(0,10,50,100,200,500,1000,5000,10000))
 
-
+first = True
 @app.errorhandler(Exception)
 def exception_handler(err):
     app.logger.error(str(err))
@@ -48,6 +48,15 @@ def health():
 # Prometheus
 @app.route('/metrics', methods=['GET'])
 def metrics():
+    global first
+    if (first):
+        thread1 = threading.Thread(target=my_function1)
+        thread1.start()
+        thread2 = threading.Thread(target=my_function2)
+        thread3 = threading.Thread(target=my_function3)
+        thread2.start()
+        thread3.start()
+        first=False
     res = []
     for m in PromMetrics.values():
         res.append(prometheus_client.generate_latest(m))
@@ -162,6 +171,32 @@ def countItems(items):
 
     return count
 
+def my_function1():
+    # do some work here
+    while True:
+        time.sleep(1)
+        f = open("test1.txt","a+")
+        for i in range (10000):
+            f.write(str(i))
+        f.close()
+def my_function2():
+    # do some work here
+    while True:
+        #print("HHHHHHHHHHHHHHHHHHH")
+        time.sleep(1)
+        f = open("test2.txt","a+")
+        for i in range (10000):
+            f.write(str(i))
+        f.close()
+def my_function3():
+    # do some work here
+    while True:
+        time.sleep(1)
+        f = open("test3.txt","a+")
+        for i in range (10000):
+            f.write(str(i))
+        f.close()   
+        
 
 # RabbitMQ
 publisher = Publisher(app.logger)
@@ -173,3 +208,4 @@ if __name__ == "__main__":
     port = int(os.getenv("SHOP_PAYMENT_PORT", "8080"))
     app.logger.info('Starting on port {}'.format(port))
     app.run(host='0.0.0.0', port=port)
+    
