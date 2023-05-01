@@ -1,6 +1,6 @@
 #!/bin/sh
 
-echo "Cart memory leak"
+echo "Ratings memory leak"
 stress-ng --vm 1 --vm-bytes 1M -t 10m
 stress-ng --vm 1 --vm-bytes 25M -t 5m
 stress-ng --vm 1 --vm-bytes 50M -t 10m
