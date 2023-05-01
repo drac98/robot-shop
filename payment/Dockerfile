@@ -14,6 +14,8 @@ RUN pip install -r requirements.txt
 COPY *.py /app/
 COPY payment.ini /app/
 
+RUN apt-get update && apt-get install -y iproute2
+
 #CMD ["python", "payment.py"]
 CMD ["uwsgi", "--ini", "payment.ini"]
 

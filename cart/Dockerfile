@@ -10,6 +10,8 @@ COPY package.json /opt/server/
 
 RUN npm install
 
+RUN apt-get update && apt-get install -y iproute2
+
 COPY server.js /opt/server/
 
 CMD ["node", "server.js"]
