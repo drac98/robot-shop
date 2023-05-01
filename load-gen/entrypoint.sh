@@ -55,8 +55,8 @@ while true; do
 
 
   echo "Start $NUM_CLIENTS at $current_hour"
-  locust -f robot-shop.py --host "$HOST" --headless -r 0.1 -u 90 -t 23m -s 5s &
-  locust -f robot-shop.py --host "$HOST" --headless -r 2 -u 50 -t 11m -s 5s &
-  locust -f robot-shop.py --host "$HOST" --headless -r 0.05 -u 60 -t 19m -s 5s
+  locust -f robot-shop.py --host "$HOST" --headless -r 0.1 -u 25 -t 23m -s 5s &
+  locust -f robot-shop.py --host "$HOST" --headless -r 2 -u 15 -t 11m -s 5s &
+  locust -f robot-shop.py --host "$HOST" --headless -r 0.05 -u 20 -t 19m -s 5s
 
 done
