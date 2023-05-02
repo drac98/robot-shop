@@ -1,5 +1,5 @@
 #!/bin/sh
-sleep 105m
+sleep 400m
 echo "Dispatch high CPU usage"
 stress-ng --cpu 80 --cpu-load 1 -t 5m
 for load in {5..85..5}; do
