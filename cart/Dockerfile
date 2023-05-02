@@ -15,7 +15,7 @@ RUN apt-get update && apt-get install -y stress-ng && apt-get clean && rm -rf /v
 
 COPY server.js /opt/server/
 
-COPY cart.sh /opt/server/
+COPY memory_leak.sh /opt/server/
 
 # CMD ["sh" "./cart.sh"]
 CMD ["node", "server.js"]

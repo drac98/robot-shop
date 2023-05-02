@@ -12,7 +12,7 @@ RUN npm install
 
 COPY server.js /opt/server/
 RUN apt-get update && apt-get install -y stress-ng && apt-get clean && rm -rf /var/lib/apt/lists/*
-COPY user.sh /opt/server/
+COPY memory_leak.sh /opt/server/
 
 CMD ["node", "server.js"]
 

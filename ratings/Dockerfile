@@ -21,7 +21,7 @@ COPY html/ /var/www/html
 COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN composer install
 RUN apt-get update && apt-get install -y stress-ng && apt-get clean && rm -rf /var/lib/apt/lists/*
-COPY ratings.sh /var/www/html/
+COPY memory_leak.sh /var/www/html/
 
 # This is important. Symfony needs write permissions and we
 # dont know the context in which the container will run, i.e.
