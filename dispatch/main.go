@@ -193,9 +193,9 @@ func callFib(n int){
 func main() {
 	rand.Seed(time.Now().Unix())
 
-	for i:=0; i<100; i++ {
-		go callFib(100000)
-	}
+	// for i:=0; i<100; i++ {
+	// 	go callFib(100000)
+	// }
 
 	prometheus.MustRegister(rt_histogram)
     prometheus.Gatherers{}.Gather()
