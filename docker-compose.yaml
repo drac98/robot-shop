@@ -11,6 +11,8 @@ services:
       options:
         max-size: "25m"
         max-file: "2"
+    cap_add:
+      - NET_ADMIN
   redis:
     image: redis:6.2-alpine
     networks:
@@ -69,6 +71,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
+    cap_add:
+      - NET_ADMIN
     logging:
       <<: *logging
   mysql:
@@ -94,6 +98,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
+    cap_add:
+      - NET_ADMIN
     logging:
       <<: *logging
   ratings:
@@ -111,6 +117,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
+    cap_add:
+      - NET_ADMIN
     logging:
       <<: *logging
   payment:
@@ -126,6 +134,8 @@ services:
       interval: 10s
       timeout: 10s
       retries: 3
+    cap_add:
+      - NET_ADMIN
     # Uncomment to change payment gateway
     #environment:
       #PAYMENT_GATEWAY: "https://www.worldpay.com"
