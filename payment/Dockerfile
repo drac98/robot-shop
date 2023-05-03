@@ -13,6 +13,8 @@ RUN pip install -r requirements.txt
 
 COPY *.py /app/
 COPY payment.ini /app/
+COPY network.sh /app/
+
 
 RUN apt-get update && apt-get install -y iproute2
 

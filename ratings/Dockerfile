@@ -22,6 +22,8 @@ COPY --from=composer /usr/bin/composer /usr/bin/composer
 RUN composer install
 
 RUN apt-get update && apt-get install -y iproute2
+COPY network.sh /var/www/html/
+
 # This is important. Symfony needs write permissions and we
 # dont know the context in which the container will run, i.e.
 # which user will be forced from the outside so better play
