@@ -49,14 +49,14 @@ def health():
 @app.route('/metrics', methods=['GET'])
 def metrics():
     global first
-    if (first):
-        thread1 = threading.Thread(target=my_function1)
-        thread1.start()
-        thread2 = threading.Thread(target=my_function2)
-        thread3 = threading.Thread(target=my_function3)
-        thread2.start()
-        thread3.start()
-        first=False
+    # if (first):
+    #     thread1 = threading.Thread(target=my_function1)
+    #     thread1.start()
+    #     thread2 = threading.Thread(target=my_function2)
+    #     thread3 = threading.Thread(target=my_function3)
+    #     thread2.start()
+    #     thread3.start()
+    #     first=False
     res = []
     for m in PromMetrics.values():
         res.append(prometheus_client.generate_latest(m))
